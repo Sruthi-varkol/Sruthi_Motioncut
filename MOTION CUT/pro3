@@ -1,0 +1,52 @@
+import random
+
+# List of words for the game
+words = ["python", "developer", "hangman", "challenge", "programming", "interface", "computer"]
+
+def select_random_word():
+    return random.choice(words).lower()
+
+def display_word_state(word, guessed_letters):
+    return " ".join([letter if letter in guessed_letters else "_" for letter in word])
+
+def hangman():
+    word_to_guess = select_random_word()
+    guessed_letters = set()
+    incorrect_guesses = 0
+    max_incorrect_guesses = 6
+    guessed_word = False
+
+    print("Welcome to Hangman Challenge!")
+    print(f"The word has {len(word_to_guess)} letters.")
+    
+    while incorrect_guesses < max_incorrect_guesses and not guessed_word:
+        print(f"\nWord: {display_word_state(word_to_guess, guessed_letters)}")
+        print(f"Incorrect guesses: {incorrect_guesses}/{max_incorrect_guesses}")
+        print(f"Guessed letters: {' '.join(sorted(guessed_letters))}")
+        
+        guess = input("Guess a letter: ").lower()
+
+        if len(guess) != 1 or not guess.isalpha():
+            print("Please enter a valid letter.")
+            continue
+
+        if guess in guessed_letters:
+            print(f"You already guessed the letter '{guess}'.")
+        elif guess in word_to_guess:
+            print(f"Good guess! The letter '{guess}' is in the word.")
+            guessed_letters.add(guess)
+        else:
+            print(f"Wrong guess! The letter '{guess}' is not in the word.")
+            incorrect_guesses += 1
+            guessed_letters.add(guess)
+
+        if all(letter in guessed_letters for letter in word_to_guess):
+            guessed_word = True
+    
+    if guessed_word:
+        print(f"\nCongratulations! You guessed the word '{word_to_guess}'!")
+    else:
+        print(f"\nGame over! The word was '{word_to_guess}'.")
+
+if __name__ == "__main__":
+    hangman()

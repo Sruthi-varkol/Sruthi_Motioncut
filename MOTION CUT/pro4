@@ -1,0 +1,44 @@
+import random
+import string
+import pyperclip  # Optional: To copy password to clipboard
+
+def generate_password(length, use_uppercase, use_numbers, use_symbols):
+    characters = string.ascii_lowercase
+    if use_uppercase:
+        characters += string.ascii_uppercase
+    if use_numbers:
+        characters += string.digits
+    if use_symbols:
+        characters += string.punctuation
+
+    password = ''.join(random.choice(characters) for _ in range(length))
+    return password
+
+def secure_password_generator():
+    print("Welcome to Secure Password Generator!")
+
+    # User input for password criteria
+    try:
+        length = int(input("Enter the desired password length: "))
+    except ValueError:
+        print("Please enter a valid number for length.")
+        return
+
+    use_uppercase = input("Include uppercase letters? (y/n): ").lower() == 'y'
+    use_numbers = input("Include numbers? (y/n): ").lower() == 'y'
+    use_symbols = input("Include symbols? (y/n): ").lower() == 'y'
+
+    password = generate_password(length, use_uppercase, use_numbers, use_symbols)
+    print(f"Generated Password: {password}")
+
+    # Option to copy password to clipboard
+    copy_to_clipboard = input("Copy password to clipboard? (y/n): ").lower() == 'y'
+    if copy_to_clipboard:
+        try:
+            pyperclip.copy(password)
+            print("Password copied to clipboard.")
+        except:
+            print("pyperclip module not available. Install using `pip install pyperclip`.")
+
+if __name__ == "__main__":
+    secure_password_generator()

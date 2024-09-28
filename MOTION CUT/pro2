@@ -1,0 +1,78 @@
+import tkinter as tk
+from tkinter import messagebox
+import json
+import os
+
+class TaskManagerApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Task Manager")
+
+        self.tasks = self.load_tasks()
+
+        # GUI Elements
+        self.task_listbox = tk.Listbox(root, height=10, width=50)
+        self.task_listbox.pack()
+
+        self.task_entry = tk.Entry(root, width=50)
+        self.task_entry.pack()
+
+        self.add_button = tk.Button(root, text="Add Task", command=self.add_task)
+        self.add_button.pack()
+
+        self.complete_button = tk.Button(root, text="Mark Complete", command=self.mark_task_complete)
+        self.complete_button.pack()
+
+        self.delete_button = tk.Button(root, text="Delete Task", command=self.delete_task)
+        self.delete_button.pack()
+
+        self.load_task_listbox()
+
+    def load_tasks(self):
+        if os.path.exists("tasks.json"):
+            with open("tasks.json", "r") as file:
+                return json.load(file)
+        return []
+
+    def save_tasks(self):
+        with open("tasks.json", "w") as file:
+            json.dump(self.tasks, file, indent=4)
+
+    def load_task_listbox(self):
+        self.task_listbox.delete(0, tk.END)
+        for task in self.tasks:
+            status = "Complete" if task["completed"] else "Incomplete"
+            self.task_listbox.insert(tk.END, f"{task['description']} [{status}]")
+
+    def add_task(self):
+        task_desc = self.task_entry.get()
+        if task_desc:
+            self.tasks.append({"description": task_desc, "completed": False})
+            self.save_tasks()
+            self.load_task_listbox()
+            self.task_entry.delete(0, tk.END)
+
+    def mark_task_complete(self):
+        selected_task_index = self.task_listbox.curselection()
+        if selected_task_index:
+            index = selected_task_index[0]
+            self.tasks[index]["completed"] = True
+            self.save_tasks()
+            self.load_task_listbox()
+        else:
+            messagebox.showwarning("No Task Selected", "Please select a task to mark complete.")
+
+    def delete_task(self):
+        selected_task_index = self.task_listbox.curselection()
+        if selected_task_index:
+            index = selected_task_index[0]
+            self.tasks.pop(index)
+            self.save_tasks()
+            self.load_task_listbox()
+        else:
+            messagebox.showwarning("No Task Selected", "Please select a task to delete.")
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = TaskManagerApp(root)
+    root.mainloop()
